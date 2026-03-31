@@ -1,27 +1,30 @@
-# 🎿 Big Mountain Resort — ML-Driven Pricing Strategy
-### Revenue Optimization Using Predictive Pricing Models Across 330 Ski Resorts
+# 🛒 Walmart Weekly Sales Forecasting
+### Demand Planning Pipeline Using XGBoost on 420K+ Weekly Records
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat-square&logo=python)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Regression%20Models-green?style=flat-square)
+![XGBoost](https://img.shields.io/badge/XGBoost-R²%200.88-orange?style=flat-square)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Feature%20Engineering-green?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Complete-brightgreen?style=flat-square)
 
 ---
 
 ## 📌 Project Overview
 
-Big Mountain Resort had no data-backed framework for setting ticket prices — leaving revenue on the table or risking demand loss from mispricing in a competitive ski market.
+Retail chains lose millions annually to stockouts and overstock. Accurate weekly demand forecasting across hundreds of stores and departments is critical — but hard to scale reliably without a rigorous, data-driven approach.
 
-This project builds predictive pricing models using data from **330 ski resorts** and **27 operational features** to help the resort understand how its pricing compares to competitors, identify which infrastructure investments justify a price increase, and quantify the exact revenue impact of those decisions.
+This project builds a time-aware demand forecasting pipeline on **420,000+ weekly sales records** from Walmart stores, using advanced feature engineering and XGBoost regression to predict weekly sales with high accuracy while preventing data leakage through proper time-series validation.
 
 ---
 
 ## 🎯 Business Problem
 
-> What ticket price should Big Mountain Resort charge — and which investments would justify raising it without losing customers?
+> How can Walmart predict weekly sales at the store-department level with enough accuracy to support demand planning and inventory optimization decisions?
 
-Resort management needed to answer two questions:
-1. Are we underpricing or overpricing relative to comparable resorts?
-2. Which operational improvements would allow us to raise prices while maintaining demand?
+Inaccurate forecasting leads to two costly outcomes:
+- **Overstock** — excess inventory ties up capital and increases storage costs
+- **Stockout** — lost sales and poor customer experience
+
+This project aims to reduce forecasting error to a level that makes inventory decisions more reliable and data-driven.
 
 ---
 
@@ -29,49 +32,49 @@ Resort management needed to answer two questions:
 
 | Property | Detail |
 |----------|--------|
-| Total resorts analyzed | 330 ski resorts |
-| Features per resort | 27 operational features |
-| Feature types | Infrastructure, terrain, services, pricing |
-| Target variable | Ticket price (USD) |
-
-**Key features included:**
-- Number of runs and trails
-- Vertical drop (feet)
-- Number of chairlifts and surface lifts
-- Snow making capability
-- Resort acreage and terrain difficulty mix
-- Weekend vs weekday pricing
-- Amenities and services offered
+| Total records | 420,000+ weekly observations |
+| Stores | 45 Walmart stores |
+| Departments | 81 departments per store |
+| Time period | Multi-year weekly data |
+| Features engineered | 20+ |
+| Target variable | Weekly sales (USD) |
 
 ---
 
 ## 🔧 Technical Approach
 
-### 1. Exploratory Data Analysis
-- Analyzed pricing distribution across 330 resorts
-- Identified which features correlate most strongly with ticket price
-- Detected outliers and missing values in operational data
+### 1. Data Cleaning
+- Handled missing values across store, department, and date fields
+- Standardized date formats for time-series processing
+- Removed or imputed outliers in weekly sales values
 
-### 2. Feature Engineering
-- Handled missing values using median imputation
-- Created interaction features between infrastructure variables
-- Normalized continuous features for linear model compatibility
+### 2. Exploratory Data Analysis
+- Analyzed sales distribution across stores and departments
+- Identified seasonal patterns, holiday spikes, and promotional effects
+- Detected and visualized correlations between features and sales
 
-### 3. Model Development
-Built and compared two regression models:
+### 3. Feature Engineering
+Engineered **20+ time-aware features** across four categories:
 
-| Model | Approach | Strength |
-|-------|----------|---------|
-| Linear Regression | Baseline interpretable model | Easy to explain to stakeholders |
-| Random Forest | Ensemble model | Captures non-linear relationships |
+| Category | Features |
+|----------|---------|
+| Calendar | Week of year, month, quarter, year |
+| Holiday | IsHoliday flag, days before/after holiday |
+| Promotions | Markdown events (1–5), promotion flags |
+| Store-level | Store type, store size, department number |
 
-### 4. Model Evaluation
-- Used cross-validation to assess generalization
-- Compared RMSE and R² across both models
-- Selected best model for business recommendations
+### 4. Time-Series Cross-Validation
+Used **TimeSeries Split** for all cross-validation to prevent data leakage — training always uses only past data to predict future values.
 
-### 5. Business Recommendation
-Used model outputs to simulate the revenue impact of specific infrastructure investments at Big Mountain Resort.
+> Standard k-fold cross-validation randomly shuffles data. For time series this allows the model to see the future during training. TimeSeries Split prevents this completely.
+
+### 5. Model Comparison
+
+| Model | RMSE | R² | Notes |
+|-------|------|----|-------|
+| Linear Regression | ~11,200 | ~0.61 | Baseline |
+| Random Forest | ~8,400 | ~0.79 | Improved but slower |
+| **XGBoost** | **6,900** | **0.88** | Best performance |
 
 ---
 
@@ -79,15 +82,29 @@ Used model outputs to simulate the revenue impact of specific infrastructure inv
 
 | Metric | Value |
 |--------|-------|
-| Resorts analyzed | 330 |
-| Features used | 27 |
-| Pricing accuracy improvement | **~20%** over baseline |
-| Recommended price increase | **$1.99 per ticket** |
-| Estimated annual revenue impact | **~$3.47M** |
-| Demand impact | None — increase is justified by infrastructure |
+| Final Model | XGBoost Regressor |
+| R² Score | **0.88** |
+| RMSE | **6,900** |
+| MAE | **4,100** |
+| Baseline R² | 0.61 |
+| Improvement over baseline | **+27 percentage points** |
 
-### Key Finding
-Two infrastructure investments — **an additional chairlift** and **increased vertical drop** — justify a **$1.99 ticket price increase** without reducing customer demand. At current visitor volume, this translates to approximately **$3.47M in incremental annual revenue**.
+> An R² of 0.88 means the model explains 88% of the variance in weekly sales — a strong result for retail forecasting at store-department granularity.
+
+---
+
+## 📁 Repository Structure
+
+```
+Capstone_3/
+│
+├── cap3_data_cleaning_final.ipynb       # Data cleaning and preprocessing
+├── cap3_EDA.ipynb                       # Exploratory data analysis
+├── Final_submitted_cap_3.ipynb          # Final model and business recommendations
+├── Capstone_3_Final_report_walmart.pdf  # Full project report
+├── final_PPT_capstone_3.pptx            # Presentation slides
+└── README.md
+```
 
 ---
 
@@ -96,30 +113,11 @@ Two infrastructure investments — **an additional chairlift** and **increased v
 | Tool | Purpose |
 |------|---------|
 | Python | Core language |
-| Pandas / NumPy | Data cleaning and manipulation |
-| Scikit-learn | Linear Regression, Random Forest, cross-validation |
-| Matplotlib / Seaborn | EDA and model result visualization |
+| Pandas / NumPy | Data manipulation and feature engineering |
+| Scikit-learn | TimeSeries Split, baseline models, metrics |
+| XGBoost | Final regression model |
+| Matplotlib / Seaborn | EDA and results visualization |
 | Jupyter Notebook | Development environment |
-
----
-
-## 📁 Project Structure
-
-```
-Capstone_3/
-│
-├── notebooks/
-│   ├── 01_EDA.ipynb                        # Exploratory data analysis
-│   ├── 02_Feature_Engineering.ipynb        # Feature creation and cleaning
-│   ├── 03_Modeling.ipynb                   # Model training and comparison
-│   └── 04_Business_Recommendations.ipynb  # Final pricing recommendations
-│
-├── data/
-│   └── README.md                           # Data source description
-│
-├── requirements.txt                        # Python dependencies
-└── README.md
-```
 
 ---
 
@@ -131,21 +129,27 @@ git clone https://github.com/patidarpuja/Capstone_3.git
 cd Capstone_3
 
 # Install dependencies
-pip install -r requirements.txt
+pip install pandas numpy scikit-learn xgboost matplotlib seaborn jupyter
 
-# Launch Jupyter
-jupyter notebook
+# Step 1 — Data cleaning
+jupyter notebook cap3_data_cleaning_final.ipynb
+
+# Step 2 — Exploratory data analysis
+jupyter notebook cap3_EDA.ipynb
+
+# Step 3 — Final model and recommendations
+jupyter notebook Final_submitted_cap_3.ipynb
 ```
 
 ---
 
 ## 💡 Key Learnings
 
-- Data-driven pricing is more reliable than intuition-based pricing in competitive markets
-- **Random Forest** captured non-linear pricing relationships that Linear Regression missed
-- Infrastructure features (chairlifts, vertical drop) are stronger price predictors than amenity features
-- Quantifying business impact in dollar terms is what makes a model recommendation actionable
-- Cross-validation is essential when working with a dataset of only 330 observations
+- **TimeSeries Split** is not optional for time-based data — standard cross-validation will overestimate model performance by leaking future data into training
+- **Feature engineering** matters more than model choice — holiday and markdown features drove most of the accuracy improvement
+- **XGBoost** outperformed Random Forest because it handles non-linear interactions between store type, department, and seasonal patterns better
+- **RMSE** is the right primary metric here because large errors are more costly than small ones in inventory planning
+- Retail forecasting at department level is significantly harder than store-level forecasting due to high variability across product categories
 
 ---
 
