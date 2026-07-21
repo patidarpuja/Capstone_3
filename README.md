@@ -1,4 +1,4 @@
-# 🛒 Walmart Weekly Sales Prediction
+# 🛒 Walmart Weekly Sales Prediction and Forecasting 
 ### Demand Planning Pipeline Using XGBoost on 420K+ Weekly Records
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat-square&logo=python)
